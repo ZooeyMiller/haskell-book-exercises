@@ -17,7 +17,6 @@ theDatabase =
             , DbDate (UTCTime
                         (fromGregorian 1921 5 1)
                         (secondsToDiffTime 34123))
-            -- , DbNumber 50
     ]
 
 
