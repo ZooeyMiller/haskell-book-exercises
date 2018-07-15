@@ -1,5 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
+import           Data.Bool
+
 stops = "pbtdkg"
 
 vowels = "aeiou"
@@ -50,3 +52,28 @@ myElemAny = any . (==)
 
 myReverse :: [a] -> [a]
 myReverse = foldr ((flip (++)) . (:[])) []
+
+myMap :: (a -> b) -> [a] -> [b]
+myMap = (flip foldr) [] . (((:) .))
+
+myFilter :: (a -> Bool) -> [a] -> [a]
+myFilter f l = foldr (\x xs -> if f x then x : xs else xs)  [] l
+
+squish :: [[a]] -> [a]
+squish = foldr (++) []
+
+squishMap :: (a -> [b]) -> [a] -> [b]
+squishMap = (flip foldr) [] . ((++) .)
+
+squishAgain :: [[a]] -> [a]
+squishAgain = squishMap id
+
+myMaximumBy :: (a -> a -> Ordering)
+                -> [a]
+                -> a
+myMaximumBy f (l:ls) = foldl (\x y -> if (f x y) == GT then x else y) l ls
+
+myMinimumBy :: (a -> a -> Ordering)
+                -> [a]
+                -> a
+myMinimumBy f (l:ls) = foldl (\x y -> if (f x y) == LT then x else y) l ls
