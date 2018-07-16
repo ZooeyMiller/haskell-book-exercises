@@ -23,4 +23,4 @@ digits n = go n [] 10
              where (a, b) = divMod int divisor
 
 wordNumber :: Int -> String 
-wordNumber = concat . intersperse "-" . map digitToWord . digits 
+wordNumber = concat . intersperse "-" . map digitToWord . digits
