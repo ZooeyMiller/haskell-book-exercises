@@ -12,7 +12,7 @@ i.e. the sigs of `x` and `y` become `(a -> (b -> c))` and `(c -> d)` respectivel
 
 as such when I run `y . x` what I am actually doing is passing the function returned from
 
-`x arbritrayValue` to `y`, rather than fully applying argument to x before passing the result on to y, and y doesn't take a function, which in this case, is what it is being applied to
+`x arbritrayValue` to `y`, rather than fully applying arguments to x before passing the result on to y, and y doesn't take a function, which in this case, is what it is being applied to
 
 If however, I suffix `y` with its own composition operator as thus
 
@@ -21,3 +21,5 @@ If however, I suffix `y` with its own composition operator as thus
 for the binary function `x` to be composed with the unary function `y`, having x be fully applied
 
 before `y` is applied to the result
+
+for reference - `(y .) . :: (a -> b -> c) -> a -> b -> d` where `y . :: (a -> c) -> a -> d`
