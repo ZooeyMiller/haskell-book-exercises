@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+
 import Data.Char
 
 isSubseqOf :: (Eq a) 
