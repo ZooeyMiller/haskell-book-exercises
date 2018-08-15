@@ -1,6 +1,8 @@
 module Cipher where
 
 import           Data.Char
+import           System.Exit (exitSuccess)
+
 
 -- the basic logic is taken from the Caesar cipher written in an earlier chapter
 -- it only works with lower case letters but, yolo
@@ -24,3 +26,13 @@ zipWithCipherString string cipher = go string cipher cipher []
 
 vigenere :: String -> String -> String
 vigenere = ((map . uncurry $ mapChar (+)) .) . zipWithCipherString
+
+main :: IO ()
+main =
+    do
+        putStr "write a string to be ciphered: "
+        term <- getLine
+        putStr "write a string to use as a cipher: "
+        ciph <- getLine
+        putStrLn $  "your ciphered term is: " ++ (vigenere term ciph)
+        exitSuccess
