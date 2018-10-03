@@ -1,5 +1,9 @@
 import           Data.Semigroup
+<<<<<<< HEAD
 import           Test.QuickCheck
+=======
+import           Test.QuickCheck (Arbitrary, arbitrary, Gen, quickCheck, oneof)
+>>>>>>> 01e8e267a8c3f5d349ca885912b7c80e0a04bfbb
 
 data Trivial = Trivial deriving (Eq, Show)
 
@@ -96,6 +100,36 @@ newtype Combine a b =
 
 instance (Semigroup b) => Semigroup (Combine a b) where
     (Combine x) <> (Combine y) = Combine (\n -> (x n) <> (y n))
+
+newtype Comp a = 
+    Comp { unComp :: a -> a }
+
+instance Semigroup (Comp a) where
+    (Comp x) <> (Comp y) = Comp $ y . x
+
+data Validation a b = Failure a | Success b deriving (Eq, Show)
+
+instance Semigroup a => Semigroup (Validation a b) where
+    (Failure x) <> (Failure y) = Failure $ x <> y
+    _ <> x@(Success _) = x
+    x <> _ = x
+
+newtype AccumulateRight a b = AccumulateRight (Validation a b) deriving (Eq, Show)
+
+instance Semigroup b => Semigroup (AccumulateRight a b) where
+    (AccumulateRight (Success x)) <> (AccumulateRight (Success y)) = AccumulateRight $ Success $ x <> y
+    x@(AccumulateRight (Success _)) <> _ = x
+    _ <> x = x
+
+
+newtype AccumulateBoth a b = AccumulateBoth (Validation a b) deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b) => Semigroup (AccumulateBoth a b) where
+    (AccumulateBoth (Success x)) <> (AccumulateBoth (Success y)) = AccumulateBoth $ Success $ x <> y
+    (AccumulateBoth (Failure x)) <> (AccumulateBoth (Failure y)) = AccumulateBoth $ Failure $ x <> y
+    _ <> x@(AccumulateBoth(Success _)) = x
+    x <> _ = x
+    
 
 
 main :: IO ()
