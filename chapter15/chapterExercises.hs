@@ -135,6 +135,10 @@ newtype Comp a =
 instance Semigroup (Comp a) where
     (Comp x) <> (Comp y) = Comp $ y . x
 
+instance (Monoid a, Semigroup a) => Monoid (Comp a) where
+    mempty = Comp $ id
+    mappend = (<>)
+
 data Validation a b = Failure a | Success b deriving (Eq, Show)
 
 instance Semigroup a => Semigroup (Validation a b) where
@@ -159,6 +163,34 @@ instance (Semigroup a, Semigroup b) => Semigroup (AccumulateBoth a b) where
     x <> _ = x
 
 
+newtype Mem s a =
+    Mem {
+        runMem :: s -> (a,s)
+    }
+
+instance Monoid a => Monoid (Mem s a) where
+    mempty = Mem $ \x -> (mempty, x)
+    mappend f g = Mem $ f'
+                    where
+                        f' x = (a `mappend` a', b')
+                            where (a, b) = runMem g x
+                                  (a', b') = runMem f b
+
+
+
+f' :: Mem Int String
+f' = Mem $ \s -> ("hi", s + 1)
+
+memCheck :: IO ()
+memCheck = do
+    let rmzero = runMem mempty 0
+        rmleft = runMem (f' `mappend` mempty) 0
+        rmright = runMem (mempty `mappend` f') 0
+    print $ rmleft
+    print $ rmright
+    print $ (rmzero :: (String, Int))
+    print $ rmleft == runMem f' 0
+    print $ rmright == runMem f' 0
 
 main :: IO ()
 main = do
