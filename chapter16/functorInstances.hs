@@ -139,6 +139,25 @@ possiblyGen = do
 instance Arbitrary a => Arbitrary (Possibly a) where
     arbitrary = possiblyGen
 
+data Sum a b = First a | Second b deriving (Eq, Show)
+
+instance Functor (Sum a) where 
+    fmap _ (First x) = First x
+    fmap f (Second x) = Second $ f x
+
+sumGen :: (Arbitrary a, Arbitrary b) => Gen (Sum a b)
+sumGen = do
+    a <- arbitrary
+    b <- arbitrary
+    oneof [ return $ First a, return $ Second b ]
+    
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Sum a b) where
+    arbitrary = sumGen
+
+-- 2. Why is a Functor instance that applies the function only to First, Either’s Left, impossible? We covered this earlier.
+-- ans: As we have to apply the first type argument to the type constructor in order
+-- for it to have the kind * -> *, you can't flip a type constructor. So fmap must always
+-- use the right value.
 
 main :: IO ()
 main = do
@@ -158,3 +177,5 @@ main = do
     quickCheck (functorCompose' :: Four' Int Int -> IntToInt -> IntToInt -> Bool)
     quickCheck (functorIdentity :: Possibly Int -> Bool)
     quickCheck (functorCompose' :: Possibly Int -> IntToInt -> IntToInt -> Bool)
+    quickCheck (functorIdentity :: Sum String Int -> Bool)
+    quickCheck (functorCompose' :: Sum String Int -> IntToInt -> IntToInt -> Bool)
