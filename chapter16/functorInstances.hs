@@ -124,6 +124,22 @@ data Trivial = Trivial
 -- values whilst maintaining structure, where Trivial lifts no values. It is not only impossible
 -- to create Functor for Trivial, it is also pointless.
 
+data Possibly a = LolNope | Yeppers a deriving (Eq, Show)
+
+
+instance Functor Possibly where 
+    fmap _ LolNope = LolNope
+    fmap f (Yeppers x) = Yeppers $ f x
+
+possiblyGen :: Arbitrary a => Gen (Possibly a)
+possiblyGen = do
+    a <- arbitrary
+    oneof [ return $ Yeppers a, return LolNope ]
+
+instance Arbitrary a => Arbitrary (Possibly a) where
+    arbitrary = possiblyGen
+
+
 main :: IO ()
 main = do
     quickCheck (functorIdentity :: Identity Int -> Bool)
@@ -140,3 +156,5 @@ main = do
     quickCheck (functorCompose' :: Four Char Int Int Int -> IntToInt -> IntToInt -> Bool)
     quickCheck (functorIdentity :: Four' Int Int -> Bool)
     quickCheck (functorCompose' :: Four' Int Int -> IntToInt -> IntToInt -> Bool)
+    quickCheck (functorIdentity :: Possibly Int -> Bool)
+    quickCheck (functorCompose' :: Possibly Int -> IntToInt -> IntToInt -> Bool)
