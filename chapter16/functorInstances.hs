@@ -127,8 +127,8 @@ data Trivial = Trivial
 data Possibly a = LolNope | Yeppers a deriving (Eq, Show)
 
 
-instance Functor Possibly where 
-    fmap _ LolNope = LolNope
+instance Functor Possibly where
+    fmap _ LolNope     = LolNope
     fmap f (Yeppers x) = Yeppers $ f x
 
 possiblyGen :: Arbitrary a => Gen (Possibly a)
@@ -141,8 +141,8 @@ instance Arbitrary a => Arbitrary (Possibly a) where
 
 data Sum a b = First a | Second b deriving (Eq, Show)
 
-instance Functor (Sum a) where 
-    fmap _ (First x) = First x
+instance Functor (Sum a) where
+    fmap _ (First x)  = First x
     fmap f (Second x) = Second $ f x
 
 sumGen :: (Arbitrary a, Arbitrary b) => Gen (Sum a b)
@@ -150,7 +150,7 @@ sumGen = do
     a <- arbitrary
     b <- arbitrary
     oneof [ return $ First a, return $ Second b ]
-    
+
 instance (Arbitrary a, Arbitrary b) => Arbitrary (Sum a b) where
     arbitrary = sumGen
 
@@ -158,6 +158,22 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Sum a b) where
 -- ans: As we have to apply the first type argument to the type constructor in order
 -- for it to have the kind * -> *, you can't flip a type constructor. So fmap must always
 -- use the right value.
+
+data BoolAndSomethingElse a = False' a | True' a deriving (Eq, Show)
+
+instance Functor BoolAndSomethingElse where
+    fmap f (False' x) = False' $ f x
+    fmap f (True' x)  = True' $ f x
+
+boolAndSomethingElseGen :: Arbitrary a => Gen (BoolAndSomethingElse a)
+boolAndSomethingElseGen = do
+    x <- arbitrary
+    y <- arbitrary
+    oneof [ return $ False' x, return $ True' y ]
+
+instance (Arbitrary a) => Arbitrary (BoolAndSomethingElse a) where
+    arbitrary = boolAndSomethingElseGen
+
 
 main :: IO ()
 main = do
@@ -179,3 +195,5 @@ main = do
     quickCheck (functorCompose' :: Possibly Int -> IntToInt -> IntToInt -> Bool)
     quickCheck (functorIdentity :: Sum String Int -> Bool)
     quickCheck (functorCompose' :: Sum String Int -> IntToInt -> IntToInt -> Bool)
+    quickCheck (functorIdentity :: BoolAndSomethingElse Int -> Bool)
+    quickCheck (functorCompose' :: BoolAndSomethingElse Int -> IntToInt -> IntToInt -> Bool)
