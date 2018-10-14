@@ -29,3 +29,16 @@ instance Monad (PhhhbbtttEither a) where
     return = pure
     (>>=) (Right' x) _ = Right' x
     (>>=) (Left' x) f  = f x
+
+newtype Identity a = Identity a deriving (Eq, Ord, Show)
+
+instance Functor Identity where
+    fmap f (Identity a) = Identity $ f a
+
+instance Applicative Identity where
+    pure = Identity
+    (<*>) (Identity f) x = fmap f x
+
+instance Monad Identity where
+    return = pure
+    (>>=) (Identity x) f = f x
