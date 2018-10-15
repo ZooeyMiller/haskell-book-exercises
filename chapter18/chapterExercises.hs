@@ -71,3 +71,25 @@ instance Applicative List where
 instance Monad List where
     return = pure
     (>>=) l f = myListConcat $ fmap f l
+
+j :: Monad m => m (m a) -> m a
+j x = (>>=) x id
+
+l1 :: Monad m => (a -> b) -> m a -> m b
+l1 = fmap
+
+l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c
+l2 f x y = f <$> x <*> y
+
+a :: Monad m => m a -> m (a -> b) -> m b
+a = flip (<*>)
+
+-- little stuck on this one... 
+meh :: Monad m => [a] -> (a -> m b) -> m [b]
+meh as f = go as f (return [])
+    where go :: Monad m => [a] -> (a -> m b) -> m [b] -> m [b]
+          go [] _ l = l
+          go (x:xs) g l = go xs g $ (((g . (:)) x) <*> l)    
+
+
+-- ((\x -> Just x) . (:)) 1 <*> Just [2]
