@@ -84,12 +84,11 @@ l2 f x y = f <$> x <*> y
 a :: Monad m => m a -> m (a -> b) -> m b
 a = flip (<*>)
 
--- little stuck on this one... 
 meh :: Monad m => [a] -> (a -> m b) -> m [b]
 meh as f = go as f (return [])
     where go :: Monad m => [a] -> (a -> m b) -> m [b] -> m [b]
-          go [] _ l = l
-          go (x:xs) g l = go xs g $ (((g . (:)) x) <*> l)    
+          go [] _ l = fmap reverse l
+          go (x:xs) g l = go xs g $ (:) <$> (g x) <*> l
 
-
--- ((\x -> Just x) . (:)) 1 <*> Just [2]
+flipType :: Monad m => [m a] -> m [a]
+flipType xs = meh xs id
