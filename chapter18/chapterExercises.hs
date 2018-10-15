@@ -42,3 +42,32 @@ instance Applicative Identity where
 instance Monad Identity where
     return = pure
     (>>=) (Identity x) f = f x
+
+data List a = Nil | Cons a (List a) deriving (Eq, Show)
+
+instance Functor List where
+    fmap f (Cons x y) = Cons (f x) (fmap f y)
+    fmap _ Nil        = Nil
+
+myListFoldR :: (a -> b -> b) -> b -> List a -> b
+myListFoldR f v (Cons x l) = f x (myListFoldR f v l)
+myListFoldR f v Nil = v
+
+instance Monoid (List a) where
+    mempty = Nil
+    mappend Nil ys         = ys
+    mappend ys Nil         = ys
+    mappend (Cons x xs) ys = Cons x $ xs `mappend` ys
+
+myListConcat :: List (List a) -> List a   
+myListConcat = myListFoldR mappend Nil
+
+instance Applicative List where
+    pure x = Cons x (Nil)
+    (<*>) Nil _          = Nil
+    (<*>) _ Nil          = Nil
+    (<*>) (Cons f fs) xs = (fmap f xs) `mappend` (fs <*> xs)
+
+instance Monad List where
+    return = pure
+    (>>=) l f = myListConcat $ fmap f l
