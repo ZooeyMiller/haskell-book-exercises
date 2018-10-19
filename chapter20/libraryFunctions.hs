@@ -33,6 +33,8 @@ toList = foldr (:) []
 fold' :: (Foldable t, Monoid m) => t m -> m
 fold' = foldr mappend mempty
 
+foldMap' :: (Foldable t, Monoid m) => (a -> m) -> t a -> m
+foldMap' f xs = foldr (mappend . f) mempty xs 
 
 ------
 
@@ -54,6 +56,14 @@ prop_length xs = length xs == length' xs
 prop_fold :: [Sum Int] -> Bool
 prop_fold xs = fold xs == fold' xs
 
+prop_foldMap :: [Int] -> Bool
+prop_foldMap xs = foldMap f xs == foldMap' f xs
+    where f x = Sum (x * 2)
+
+prop_foldMapMaybe :: Maybe Int -> Bool
+prop_foldMapMaybe xm = foldMap f xm == foldMap' f xm
+        where f x = Sum (x * 2)
+
 -- can't propcheck minimum/maximum due to my version and lib version having a different type
 
 main :: IO ()
@@ -64,6 +74,9 @@ main = do
     quickCheck prop_null
     quickCheck prop_length
     quickCheck prop_fold
+    quickCheck prop_foldMap
+    quickCheck prop_foldMapMaybe
+
 
 
 
