@@ -1,3 +1,6 @@
+import           Test.QuickCheck
+import           Test.QuickCheck.Checkers
+import           Test.QuickCheck.Classes
 
 data Nope a = NopeDotJpg deriving (Show, Eq)
 
@@ -12,7 +15,7 @@ instance Monad Nope where
     return = pure
     (>>=) _ _ = NopeDotJpg
 
-data PhhhbbtttEither b a = Left' a | Right' b
+data PhhhbbtttEither b a = Left' a | Right' b deriving (Show, Eq)
 
 instance Functor (PhhhbbtttEither a) where
     fmap _ (Right' x) = Right' x
@@ -51,7 +54,7 @@ instance Functor List where
 
 myListFoldR :: (a -> b -> b) -> b -> List a -> b
 myListFoldR f v (Cons x l) = f x (myListFoldR f v l)
-myListFoldR f v Nil = v
+myListFoldR f v Nil        = v
 
 instance Monoid (List a) where
     mempty = Nil
@@ -59,7 +62,7 @@ instance Monoid (List a) where
     mappend ys Nil         = ys
     mappend (Cons x xs) ys = Cons x $ xs `mappend` ys
 
-myListConcat :: List (List a) -> List a   
+myListConcat :: List (List a) -> List a
 myListConcat = myListFoldR mappend Nil
 
 instance Applicative List where
@@ -87,8 +90,41 @@ a = flip (<*>)
 meh :: Monad m => [a] -> (a -> m b) -> m [b]
 meh as f = go as f (return [])
     where go :: Monad m => [a] -> (a -> m b) -> m [b] -> m [b]
-          go [] _ l = fmap reverse l
+          go [] _ l     = fmap reverse l
           go (x:xs) g l = go xs g $ (:) <$> (g x) <*> l
 
 flipType :: Monad m => [m a] -> m [a]
 flipType xs = meh xs id
+
+instance Arbitrary a => Arbitrary (Nope a) where
+    arbitrary = return NopeDotJpg
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (PhhhbbtttEither a b) where
+    arbitrary = oneof [Left' <$> arbitrary, Right' <$> arbitrary]
+
+instance Arbitrary a => Arbitrary (Identity a) where
+    arbitrary = Identity <$> arbitrary
+
+instance Arbitrary a => Arbitrary (List a) where
+    arbitrary = oneof [return Nil, Cons <$>  arbitrary <*> arbitrary]
+
+instance EqProp (Nope a) where (=-=) = eq
+instance (Eq a, Eq b) => EqProp (PhhhbbtttEither b a) where (=-=) = eq
+instance Eq a => EqProp (Identity a) where (=-=) = eq
+instance Eq a => EqProp (List a) where (=-=) = eq
+
+nopeTrigger = undefined :: Nope (Int, Int, Int)
+eitherTrigger = undefined :: PhhhbbtttEither (Int, Int, Int) (Int, Int, Int)
+identityTrigger = undefined :: Identity (Int, Int, Int)
+listTrigger = undefined :: List (Int, Int, Int)
+
+main :: IO ()
+main = do
+    quickBatch (applicative identityTrigger)
+    quickBatch (monad identityTrigger)
+    quickBatch (applicative listTrigger)
+    quickBatch (monad listTrigger)
+    quickBatch (applicative eitherTrigger)
+    quickBatch (monad eitherTrigger)
+    quickBatch (applicative nopeTrigger)
+    quickBatch (monad nopeTrigger)
