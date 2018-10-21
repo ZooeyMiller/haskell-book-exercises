@@ -196,21 +196,52 @@ data S n a = S (n a) a deriving (Eq, Show)
 instance ( Functor n, Arbitrary (n a) , Arbitrary a ) => Arbitrary (S n a) where
     arbitrary = S <$> arbitrary <*> arbitrary
 
-instance ( Applicative n , Testable (n Property) , EqProp a ) => EqProp (S n a) where
-    (S x y) =-= (S p q) = (property $ (=-=) <$> x <*> p) .&. (y =-= q)
-
 instance Functor n => Functor (S n) where
     fmap f (S x y) = S (fmap f x) (f y)
 
-instance Foldable (S n) where
-    foldr f x (S _ y) = f y x
+instance Foldable n => Foldable (S n) where
+    foldMap f (S nx y) = (foldMap f nx) <> f y
 
 instance Traversable n => Traversable (S n) where
     traverse f (S x y) = S <$> (traverse f x) <*> (f y)
 
+instance (Eq a, Eq (n a)) => EqProp (S n a) where (=-=) = eq
+
 sTrigger = undefined :: S [] (Int, Int, [Int])
 
+---
+
+data Tree a = Empty | Leaf a | Node (Tree a) a (Tree a) deriving (Eq, Show)
+
+instance Functor Tree where
+    fmap _ Empty          = Empty
+    fmap f (Leaf x)       = Leaf $ f x
+    fmap f (Node xs y zs) = Node (fmap f xs) (f y) (fmap f zs)
+
+instance Foldable Tree where
+    foldMap _ Empty          = mempty
+    foldMap f (Leaf x)       = f x
+    foldMap f (Node xs y zs) = foldMap f xs <> f y <> foldMap f zs
+
+instance Traversable Tree where
+    traverse _ Empty          = pure Empty
+    traverse f (Leaf x)       = Leaf <$> f x
+    traverse f (Node xs y zs) = (pure Node) <*> (traverse f xs) <*> (f y) <*> (traverse f zs)
+
+instance Arbitrary a => Arbitrary (Tree a) where
+    arbitrary = oneof [
+        return Empty
+        , Leaf <$> arbitrary
+        , liftA3 Node arbitrary arbitrary arbitrary ]
+
+instance Eq a => EqProp (Tree a) where (=-=) = eq
+
+treeTrigger = undefined :: Tree (Int, Int, [Int])
+
+
 main = do
+    quickBatch (functor treeTrigger)
+    quickBatch (traversable treeTrigger)
     quickBatch (functor sTrigger)
     quickBatch (traversable sTrigger)
     quickBatch (functor biggerTrigger)
