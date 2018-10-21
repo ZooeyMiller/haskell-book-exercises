@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 import           Control.Applicative
 import           Data.Monoid
 import           Test.QuickCheck
@@ -138,8 +140,83 @@ instance (Eq a, Eq b) => EqProp (Pair a b) where (=-=) = eq
 
 pairTrigger = undefined :: Pair (Int, Int, [Int]) (Int, Int, [Int])
 
+---
+
+data Big a b = Big a b b deriving (Eq, Show)
+
+instance Functor (Big a) where
+    fmap f (Big x y z) = Big x (f y) (f z)
+
+instance Foldable (Big a) where
+    foldMap f (Big _ x y) = f x <> f y
+
+instance Traversable (Big a) where
+    traverse f (Big x y z) = liftA2 (Big x) (f y) (f z)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Big a b) where
+    arbitrary = do
+        a <- arbitrary
+        b <- arbitrary
+        c <- arbitrary
+        return $ Big a b c
+
+instance (Eq a, Eq b) => EqProp (Big a b) where (=-=) = eq
+
+bigTrigger = undefined :: Big (Int, Int, [Int]) (Int, Int, [Int])
+
+---
+
+data Bigger a b = Bigger a b b b deriving (Eq, Show)
+
+instance Functor (Bigger a) where
+    fmap f (Bigger w x y z) = Bigger w (f x) (f y) (f z)
+
+instance Foldable (Bigger a) where
+    foldMap f (Bigger _ x y z) = f x <> f y <> f z
+
+instance Traversable (Bigger a) where
+    traverse f (Bigger w x y z) = liftA3 (Bigger w) (f x) (f y) (f z)
+
+instance (Arbitrary a, Arbitrary b) => Arbitrary (Bigger a b) where
+    arbitrary = do
+        a <- arbitrary
+        b <- arbitrary
+        c <- arbitrary
+        d <- arbitrary
+        return $ Bigger a b c d
+
+instance (Eq a, Eq b) => EqProp (Bigger a b) where (=-=) = eq
+
+biggerTrigger = undefined :: Bigger (Int, Int, [Int]) (Int, Int, [Int])
+
+---
+
+data S n a = S (n a) a deriving (Eq, Show)
+
+instance ( Functor n, Arbitrary (n a) , Arbitrary a ) => Arbitrary (S n a) where
+    arbitrary = S <$> arbitrary <*> arbitrary
+
+instance ( Applicative n , Testable (n Property) , EqProp a ) => EqProp (S n a) where
+    (S x y) =-= (S p q) = (property $ (=-=) <$> x <*> p) .&. (y =-= q)
+
+instance Functor n => Functor (S n) where
+    fmap f (S x y) = S (fmap f x) (f y)
+
+instance Foldable (S n) where
+    foldr f x (S _ y) = f y x
+
+instance Traversable n => Traversable (S n) where
+    traverse f (S x y) = S <$> (traverse f x) <*> (f y)
+
+sTrigger = undefined :: S [] (Int, Int, [Int])
 
 main = do
+    quickBatch (functor sTrigger)
+    quickBatch (traversable sTrigger)
+    quickBatch (functor biggerTrigger)
+    quickBatch (traversable biggerTrigger)
+    quickBatch (functor bigTrigger)
+    quickBatch (traversable bigTrigger)
     quickBatch (functor pairTrigger)
     quickBatch (traversable pairTrigger)
     quickBatch (functor threeTrigger)
