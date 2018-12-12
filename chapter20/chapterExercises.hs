@@ -30,6 +30,6 @@ instance Foldable (Four' a) where
     foldr f z' (Four' _ x y z) = f x $ f y $ f z z'
     foldMap f (Four' _ x y z) = f x <> f y <> f z
 
-filterF :: (Applicative f, Foldable t, Monoid (f a))
-                => (a -> Bool) -> t a -> f a
+filterF
+  :: (Applicative f, Foldable t, Monoid (f a)) => (a -> Bool) -> t a -> f a
 filterF f xs = foldMap (\x -> if f x then pure x else mempty) xs

@@ -27,7 +27,7 @@ clownCar = Car Tata (Price 7000)
 doge = Plane PapuAir (Size 1000)
 
 isCar :: Vehicle -> Bool
-isCar (Car x y)=True
+isCar (Car x y) = True
 isCar _         = False
 
 isPlane :: Vehicle -> Bool

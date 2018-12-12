@@ -1,4 +1,4 @@
-import           Control.Monad (join)
+import           Control.Monad                  ( join )
 
 -- join :: Monad m => m (m a) -> m a
 -- write bind in terms of fmap and join

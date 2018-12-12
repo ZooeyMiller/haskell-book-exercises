@@ -5,7 +5,7 @@ instance Functor List where
     fmap _ Nil        = Nil
 
 append :: List a -> List a -> List a
-append Nil ys         = ys
+append Nil         ys = ys
 append (Cons x xs) ys = Cons x $ xs `append` ys
 
 instance Applicative List where

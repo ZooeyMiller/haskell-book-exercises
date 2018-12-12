@@ -115,7 +115,8 @@ instance (Arbitrary a, Arbitrary b, Arbitrary c) =>
 
 instance (Eq a, Eq b, Eq c) => EqProp (Three a b c) where (=-=) = eq
 
-threeTrigger = undefined :: Three (Int, Int, [Int]) (Int, Int, [Int]) (Int, Int, [Int])
+threeTrigger =
+  undefined :: Three (Int, Int, [Int]) (Int, Int, [Int]) (Int, Int, [Int])
 
 ---
 
@@ -240,23 +241,23 @@ treeTrigger = undefined :: Tree (Int, Int, [Int])
 
 
 main = do
-    quickBatch (functor treeTrigger)
-    quickBatch (traversable treeTrigger)
-    quickBatch (functor sTrigger)
-    quickBatch (traversable sTrigger)
-    quickBatch (functor biggerTrigger)
-    quickBatch (traversable biggerTrigger)
-    quickBatch (functor bigTrigger)
-    quickBatch (traversable bigTrigger)
-    quickBatch (functor pairTrigger)
-    quickBatch (traversable pairTrigger)
-    quickBatch (functor threeTrigger)
-    quickBatch (traversable threeTrigger)
-    quickBatch (functor listTrigger)
-    quickBatch (traversable listTrigger)
-    quickBatch (functor optionalTrigger)
-    quickBatch (traversable optionalTrigger)
-    quickBatch (functor constantTrigger)
-    quickBatch (traversable constantTrigger)
-    quickBatch (functor identityTrigger)
-    quickBatch (traversable identityTrigger)
+  quickBatch (functor treeTrigger)
+  quickBatch (traversable treeTrigger)
+  quickBatch (functor sTrigger)
+  quickBatch (traversable sTrigger)
+  quickBatch (functor biggerTrigger)
+  quickBatch (traversable biggerTrigger)
+  quickBatch (functor bigTrigger)
+  quickBatch (traversable bigTrigger)
+  quickBatch (functor pairTrigger)
+  quickBatch (traversable pairTrigger)
+  quickBatch (functor threeTrigger)
+  quickBatch (traversable threeTrigger)
+  quickBatch (functor listTrigger)
+  quickBatch (traversable listTrigger)
+  quickBatch (functor optionalTrigger)
+  quickBatch (traversable optionalTrigger)
+  quickBatch (functor constantTrigger)
+  quickBatch (traversable constantTrigger)
+  quickBatch (functor identityTrigger)
+  quickBatch (traversable identityTrigger)

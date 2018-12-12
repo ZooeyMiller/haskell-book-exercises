@@ -1,4 +1,4 @@
-import           Control.Applicative (liftA3)
+import           Control.Applicative            ( liftA3 )
 import           Data.Monoid
 
 -- Given a type specialise the types of the functions

@@ -1,6 +1,11 @@
-import           Data.Monoid     hiding ((<>))
+import           Data.Monoid             hiding ( (<>) )
 import           Data.Semigroup
-import           Test.QuickCheck (Arbitrary, Gen, arbitrary, oneof, quickCheck)
+import           Test.QuickCheck                ( Arbitrary
+                                                , Gen
+                                                , arbitrary
+                                                , oneof
+                                                , quickCheck
+                                                )
 
 data Trivial = Trivial deriving (Eq, Show)
 
@@ -37,8 +42,8 @@ instance (Monoid a, Semigroup a) => Monoid (Identity a) where
 
 identityGen :: Arbitrary a => Gen (Identity a)
 identityGen = do
-    a <- arbitrary
-    return (Identity a)
+  a <- arbitrary
+  return (Identity a)
 
 instance Arbitrary a => Arbitrary (Identity a) where
     arbitrary = identityGen
@@ -56,9 +61,9 @@ instance (Monoid a, Semigroup a, Monoid b, Semigroup b) => Monoid (Two a b) wher
 
 twoGen :: (Arbitrary a, Arbitrary b) => Gen (Two a b)
 twoGen = do
-    a <- arbitrary
-    b <- arbitrary
-    return (Two a b)
+  a <- arbitrary
+  b <- arbitrary
+  return (Two a b)
 
 instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
     arbitrary = twoGen
@@ -109,9 +114,9 @@ instance Semigroup (Or a b) where
 
 orGen :: (Arbitrary a, Arbitrary b) => Gen (Or a b)
 orGen = do
-    a <- arbitrary
-    b <- arbitrary
-    oneof [ return $ Fst a, return $ Snd b ]
+  a <- arbitrary
+  b <- arbitrary
+  oneof [return $ Fst a, return $ Snd b]
 
 instance (Arbitrary a, Arbitrary b) => Arbitrary (Or a b) where
     arbitrary = orGen
@@ -183,33 +188,33 @@ f' = Mem $ \s -> ("hi", s + 1)
 
 memCheck :: IO ()
 memCheck = do
-    let rmzero = runMem mempty 0
-        rmleft = runMem (f' `mappend` mempty) 0
-        rmright = runMem (mempty `mappend` f') 0
-    print $ rmleft
-    print $ rmright
-    print $ (rmzero :: (String, Int))
-    print $ rmleft == runMem f' 0
-    print $ rmright == runMem f' 0
+  let rmzero  = runMem mempty 0
+      rmleft  = runMem (f' `mappend` mempty) 0
+      rmright = runMem (mempty `mappend` f') 0
+  print $ rmleft
+  print $ rmright
+  print $ (rmzero :: (String, Int))
+  print $ rmleft == runMem f' 0
+  print $ rmright == runMem f' 0
 
 main :: IO ()
 main = do
-    quickCheck (semigroupAssoc :: TrivAssoc)
-    quickCheck (monoidLeftIdentity :: Trivial -> Bool)
-    quickCheck (monoidRightIdentity :: Trivial -> Bool)
-    quickCheck (semigroupAssoc :: IdAssoc)
-    quickCheck (monoidLeftIdentity :: (Identity [Int]) -> Bool)
-    quickCheck (monoidRightIdentity :: (Identity [Int]) -> Bool)
-    quickCheck (semigroupAssoc :: TwoAssoc)
-    quickCheck (monoidLeftIdentity :: (Two [Int] [Char]) -> Bool)
-    quickCheck (monoidRightIdentity :: (Two [Int] [Char]) -> Bool)
-    quickCheck (semigroupAssoc :: BoolDisjAssoc)
-    quickCheck (monoidLeftIdentity :: BoolDisj -> Bool)
-    quickCheck (monoidRightIdentity :: BoolDisj -> Bool)
-    quickCheck (semigroupAssoc :: BoolConjAssoc)
-    quickCheck (monoidLeftIdentity :: BoolConj -> Bool)
-    quickCheck (monoidRightIdentity :: BoolConj -> Bool)
-    quickCheck (semigroupAssoc :: OrAssoc)
+  quickCheck (semigroupAssoc :: TrivAssoc)
+  quickCheck (monoidLeftIdentity :: Trivial -> Bool)
+  quickCheck (monoidRightIdentity :: Trivial -> Bool)
+  quickCheck (semigroupAssoc :: IdAssoc)
+  quickCheck (monoidLeftIdentity :: (Identity [Int]) -> Bool)
+  quickCheck (monoidRightIdentity :: (Identity [Int]) -> Bool)
+  quickCheck (semigroupAssoc :: TwoAssoc)
+  quickCheck (monoidLeftIdentity :: (Two [Int] [Char]) -> Bool)
+  quickCheck (monoidRightIdentity :: (Two [Int] [Char]) -> Bool)
+  quickCheck (semigroupAssoc :: BoolDisjAssoc)
+  quickCheck (monoidLeftIdentity :: BoolDisj -> Bool)
+  quickCheck (monoidRightIdentity :: BoolDisj -> Bool)
+  quickCheck (semigroupAssoc :: BoolConjAssoc)
+  quickCheck (monoidLeftIdentity :: BoolConj -> Bool)
+  quickCheck (monoidRightIdentity :: BoolConj -> Bool)
+  quickCheck (semigroupAssoc :: OrAssoc)
 
 
 

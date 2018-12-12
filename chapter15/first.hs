@@ -45,6 +45,6 @@ monoidRightIdentity a = (a <> mempty) == a
 
 main :: IO ()
 main = do
-    quickCheck (monoidAssoc :: FirstMappend)
-    quickCheck (monoidLeftIdentity :: FstId)
-    quickCheck (monoidRightIdentity :: FstId)
+  quickCheck (monoidAssoc :: FirstMappend)
+  quickCheck (monoidLeftIdentity :: FstId)
+  quickCheck (monoidRightIdentity :: FstId)

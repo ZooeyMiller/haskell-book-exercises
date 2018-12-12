@@ -17,16 +17,10 @@ data Dog = Dog {
 } deriving (Eq, Show)
 
 zooey :: Person
-zooey = Person
-        (HumanName "Zooey")
-        (DogName "Murdock")
-        (Address "Secret")
+zooey = Person (HumanName "Zooey") (DogName "Murdock") (Address "Secret")
 
 other :: Person
-other = Person
-        (HumanName "Jack")
-        (DogName "Spot")
-        (Address "France")
+other = Person (HumanName "Jack") (DogName "Spot") (Address "France")
 
 getDog :: Person -> Dog
 getDog p = Dog (dogName p) (address p)

@@ -1,9 +1,9 @@
 import           Control.Applicative
-import           Data.List           (elemIndex)
+import           Data.List                      ( elemIndex )
 
 
 added :: Maybe Integer
-added = (+3) <$> (lookup 3 $ zip [1, 2, 3] [4, 5, 6])
+added = (+ 3) <$> (lookup 3 $ zip [1, 2, 3] [4, 5, 6])
 
 y :: Maybe Integer
 y = lookup 3 $ zip [1, 2, 3] [4, 5, 6]

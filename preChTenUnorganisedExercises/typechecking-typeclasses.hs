@@ -6,4 +6,4 @@ data Papu =
   Papu Rocks Yeah deriving (Eq, Show)
 
 equalityForall :: Papu -> Papu -> Bool
-equalityForall p p' = p > p' 
+equalityForall p p' = p > p'

@@ -89,9 +89,10 @@ a = flip (<*>)
 
 meh :: Monad m => [a] -> (a -> m b) -> m [b]
 meh as f = go as f (return [])
-    where go :: Monad m => [a] -> (a -> m b) -> m [b] -> m [b]
-          go [] _ l     = fmap reverse l
-          go (x:xs) g l = go xs g $ (:) <$> (g x) <*> l
+ where
+  go :: Monad m => [a] -> (a -> m b) -> m [b] -> m [b]
+  go []       _ l = fmap reverse l
+  go (x : xs) g l = go xs g $ (:) <$> (g x) <*> l
 
 flipType :: Monad m => [m a] -> m [a]
 flipType xs = meh xs id
@@ -120,11 +121,11 @@ listTrigger = undefined :: List (Int, Int, Int)
 
 main :: IO ()
 main = do
-    quickBatch (applicative identityTrigger)
-    quickBatch (monad identityTrigger)
-    quickBatch (applicative listTrigger)
-    quickBatch (monad listTrigger)
-    quickBatch (applicative eitherTrigger)
-    quickBatch (monad eitherTrigger)
-    quickBatch (applicative nopeTrigger)
-    quickBatch (monad nopeTrigger)
+  quickBatch (applicative identityTrigger)
+  quickBatch (monad identityTrigger)
+  quickBatch (applicative listTrigger)
+  quickBatch (monad listTrigger)
+  quickBatch (applicative eitherTrigger)
+  quickBatch (monad eitherTrigger)
+  quickBatch (applicative nopeTrigger)
+  quickBatch (monad nopeTrigger)

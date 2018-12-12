@@ -18,29 +18,20 @@ data Programmer =
     , lang :: ProgLang } deriving (Eq, Show)
 
 nineToFive :: Programmer
-nineToFive =
-    Programmer
-    { os = Mac
-    , lang = Haskell }
+nineToFive = Programmer {os = Mac, lang = Haskell}
 
 
 feelingWizardly :: Programmer
-feelingWizardly =
-    Programmer
-    { lang = Agda
-    , os = GnuPlusLinux }
+feelingWizardly = Programmer {lang = Agda, os = GnuPlusLinux}
 
 
 allOperatingSystems :: [OperatingSystem]
 allOperatingSystems =
-    [ GnuPlusLinux
-    , OpenBSDPlusNevermindJustBSDStill
-    , Mac
-    , Windows
-    ]
+  [GnuPlusLinux, OpenBSDPlusNevermindJustBSDStill, Mac, Windows]
 
 allLanguages :: [ProgLang]
 allLanguages = [Haskell, Agda, Idris, PureScript]
 
 allProgrammers :: [Programmer]
-allProgrammers = [Programmer x y | x <- allOperatingSystems, y <- allLanguages]
+allProgrammers =
+  [ Programmer x y | x <- allOperatingSystems, y <- allLanguages ]

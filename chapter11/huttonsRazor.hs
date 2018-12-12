@@ -5,9 +5,9 @@ data Expr
     | Add Expr Expr
 
 eval :: Expr -> Integer
-eval (Lit x)   = x
+eval (Lit x  ) = x
 eval (Add x y) = (eval x) + (eval y)
 
 printExpr :: Expr -> String
-printExpr (Lit x)   = show x
+printExpr (Lit x  ) = show x
 printExpr (Add x y) = (printExpr x) ++ " + " ++ (printExpr y)
