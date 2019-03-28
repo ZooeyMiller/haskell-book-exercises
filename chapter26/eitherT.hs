@@ -17,3 +17,29 @@ instance Applicative m => Applicative (EitherT e m) where
     where f = runEither fm
           -- m (Either e (a -> b)) -> m (Either e a)
           x = runEither xm
+
+instance Monad m => Monad (EitherT e m) where
+    return = pure
+--  (>>=) :: EitherT e m a -> (a -> EitherT e m b) -> EitherT e m b
+    (>>=) x f = EitherT $ runEither x >>= g f
+      where g _ (Left z)   = pure $ Left z
+            g h (Right z) = runEither $ h z
+
+
+swapEither :: Either e a -> Either a e
+swapEither (Left x) = Right x
+swapEither (Right x) = Left x
+
+
+swapEitherT :: (Functor m) => EitherT e m a -> EitherT a m e
+swapEitherT = EitherT . fmap swapEither . runEither 
+
+
+eitherT :: Monad m =>
+           (a -> m c)
+        -> (b -> m c)
+        -> EitherT a m b
+        -> m c
+eitherT f g x = runEither x >>= h
+    where h (Left y) = f y 
+          h (Right y) = g y 
