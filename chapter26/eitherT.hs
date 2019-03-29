@@ -1,3 +1,6 @@
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE TupleSections #-}
+
 module MyEitherT where
 
 data EitherT e m a = EitherT { runEither :: m (Either e a) }
@@ -43,3 +46,20 @@ eitherT :: Monad m =>
 eitherT f g x = runEither x >>= h
     where h (Left y) = f y 
           h (Right y) = g y 
+
+data StateT s m a = StateT { runStateT :: s -> m (a,s) }
+
+instance Functor m => Functor (StateT s m) where
+  fmap :: (a -> b) -> StateT s m a -> StateT s m b 
+  fmap f (StateT sma) = StateT $ fg 
+    where fg s = fmap (\(x, ss) -> (f x, ss)) (sma s)
+
+
+
+
+
+        -- sma :: s -> m (a,s) 
+     
+
+ 
+
